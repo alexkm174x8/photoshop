@@ -2,9 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <omp.h>
 #include "img_ops.h"   
-
-#define NUM_THREADS 6
 
 int main() {
     FILE *fptr;
@@ -31,14 +30,27 @@ int main() {
     int thread_configs[] = {6, 12, 18};
     int num_configs = 3;
 
+    // Desactiva el ajuste dinámico para respetar exactamente los hilos solicitados.
+    omp_set_dynamic(0);
+
     // un for para cada configuración de threads 
     for (int config_idx = 0; config_idx < num_configs; config_idx++) {
         int num_threads = thread_configs[config_idx];
-        printf("%d threads:\n", num_threads);
+        int threads_used = 0;
+        printf("Configuracion solicitada: %d threads\n", num_threads);
+
+        #pragma omp parallel num_threads(num_threads)
+        {
+            #pragma omp single
+            {
+                threads_used = omp_get_num_threads();
+            }
+        }
         
-        clock_t start_time = clock();
+        double start_time = omp_get_wtime();
         
-        // otro for para procesar cada imagen con esa configuración de threads
+        // Data parallelism: cada thread procesa imágenes distintas del arreglo.
+        #pragma omp parallel for num_threads(num_threads) schedule(static)
         for (int img_idx = 0; img_idx < num_images; img_idx++) {
             char img_name[50];
             const char *filename = strrchr(images[img_idx], '/') + 1;
@@ -48,61 +60,35 @@ int main() {
             
             // se crea un nuevo nombre para cada imagen que incluya el número de threads usados
             char img_name_with_threads[80];
-            sprintf(img_name_with_threads, "%s_t%d", img_name, num_threads);
-            
-            #pragma omp parallel num_threads(num_threads)
-            {
-                #pragma omp sections
-                {
-                    #pragma omp section
-                    {
-                        char output[100];
-                        sprintf(output, "results/%s_inv", img_name_with_threads);
-                        inv_img(output, images[img_idx]);
-                    }
-                    #pragma omp section
-                    {
-                        char output[100];
-                        sprintf(output, "results/%s_espejo_gris", img_name_with_threads);
-                        inv_img_grey_horizontal(output, images[img_idx]);
-                    }
-                    #pragma omp section
-                    {
-                        char output[100];
-                        sprintf(output, "results/%s_inv_color", img_name_with_threads);
-                        inv_img_color(output, images[img_idx]);
-                    }
-                    #pragma omp section
-                    {
-                        char output[100];
-                        sprintf(output, "results/%s_inv_bn_vertical", img_name_with_threads);
-                        inv_img_bn_vertical(output, images[img_idx]);
-                    }
-                    #pragma omp section
-                    {
-                        char output[100];
-                        sprintf(output, "results/%s_desenfoque", img_name_with_threads);
-                        desenfoque(images[img_idx], output, 27);
-                    }
-                    #pragma omp section
-                    {
-                        char output[100];
-                        sprintf(output, "results/%s_desenfoque_bn", img_name_with_threads);
-                        desenfoque_gris(images[img_idx], output, 27);
-                    }
-                    #pragma omp section
-                    {
-                        char output[100];
-                        sprintf(output, "results/%s_espejo_color", img_name_with_threads);
-                        inv_img_color_horizontal(output, images[img_idx]);
-                    }
-                }
-            }
+            snprintf(img_name_with_threads, sizeof(img_name_with_threads), "%s_t%d", img_name, num_threads);
+
+            char output[100];
+            snprintf(output, sizeof(output), "results/%s_inv", img_name_with_threads);
+            inv_img(output, images[img_idx]);
+
+            snprintf(output, sizeof(output), "results/%s_espejo_gris", img_name_with_threads);
+            inv_img_grey_horizontal(output, images[img_idx]);
+
+            snprintf(output, sizeof(output), "results/%s_inv_color", img_name_with_threads);
+            inv_img_color(output, images[img_idx]);
+
+            snprintf(output, sizeof(output), "results/%s_inv_bn_vertical", img_name_with_threads);
+            inv_img_bn_vertical(output, images[img_idx]);
+
+            snprintf(output, sizeof(output), "results/%s_desenfoque", img_name_with_threads);
+            desenfoque(images[img_idx], output, 27);
+
+            snprintf(output, sizeof(output), "results/%s_desenfoque_bn", img_name_with_threads);
+            desenfoque_gris(images[img_idx], output, 27);
+
+            snprintf(output, sizeof(output), "results/%s_espejo_color", img_name_with_threads);
+            inv_img_color_horizontal(output, images[img_idx]);
         }
         
-        clock_t end_time = clock();
-        double elapsed_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
-        printf("%.2f segundos\n", elapsed_time);
+        double end_time = omp_get_wtime();
+        double elapsed_time = end_time - start_time;
+        printf("Threads realmente usados: %d\n", threads_used);
+        printf("Tiempo: %.4f segundos\n\n", elapsed_time);
     }
     
     return 0;
