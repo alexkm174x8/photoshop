@@ -27,18 +27,18 @@ int main(){
 
     // 1. Definimos las rutas de las 4 imágenes de entrada
     const char *imagenes_entrada[4] = {
-        "./img/prueba1.bmp",
-        "./img/prueba2.bmp",
-        "./img/prueba3.bmp",
-        "./img/prueba4.bmp"
+        "./img/miri.bmp",
+        "./img/kong.bmp",
+        "./img/fany.bmp",
+        "./img/sofi.bmp"
     };
 
     // 2. Definimos un prefijo para cada imagen para que los archivos de salida no se sobrescriban
     const char *prefijos[4] = {
-        "img1",
-        "img2",
-        "img3",
-        "img4"
+        "miri",
+        "kong",
+        "fany",
+        "sofi"
     };
 
     // 3. Ciclo principal que procesa una imagen a la vez
@@ -56,30 +56,14 @@ int main(){
         sprintf(out_desenfoque, "%s_desenfoque", prefijos[i]);
         sprintf(out_desenfoque_color, "%s_desenfoque_color", prefijos[i]);
 
-        // 4. Las transformaciones DE ESTA IMAGEN se hacen en paralelo
-        #pragma omp parallel
-        {
-            #pragma omp sections
-            {
-                #pragma omp section
-                inv_img(out_inv, imagenes_entrada[i]); 
-                
-                #pragma omp section
-                inv_img_grey_horizontal(out_espejo, imagenes_entrada[i]); 
-                
-                #pragma omp section
-                inv_img_color(out_inv_color, imagenes_entrada[i]); 
-
-                #pragma omp section
-                inv_img_color_horizontal(out_espejo_color, imagenes_entrada[i]); 
-                
-                #pragma omp section
-                desenfoque(imagenes_entrada[i], out_desenfoque, 27); 
-
-                #pragma omp section
-                desenfoque_color(imagenes_entrada[i], out_desenfoque_color, 27);
-            }
-        }
+        // Transformaciones secuenciales por imagen.
+        // El paralelismo principal ahora ocurre dentro de cada filtro (data parallelism).
+        inv_img(out_inv, imagenes_entrada[i]);
+        inv_img_grey_horizontal(out_espejo, imagenes_entrada[i]);
+        inv_img_color(out_inv_color, imagenes_entrada[i]);
+        inv_img_color_horizontal(out_espejo_color, imagenes_entrada[i]);
+        desenfoque(imagenes_entrada[i], out_desenfoque, 27);
+        desenfoque_color(imagenes_entrada[i], out_desenfoque_color, 27);
     }
     
     clock_t fin = clock();
