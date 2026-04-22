@@ -1,0 +1,278 @@
+#include <ctype.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <omp.h>
+#include <sys/stat.h>
+
+#ifdef _WIN32
+#include <direct.h>
+#define MKDIR(path) _mkdir(path)
+#define PATH_SEP '\\'
+#else
+#include <unistd.h>
+#define MKDIR(path) mkdir(path, 0777)
+#define PATH_SEP '/'
+#endif
+
+#include "selec_proc.h"
+#include "selec_proc_1.h"
+
+#define NUM_THREADS 18
+#define MAX_IMAGES 10
+#define MAX_PATH_LEN 1024
+
+typedef struct {
+    int vg;
+    int vc;
+    int hg;
+    int hc;
+    int dg;
+    int dc;
+} FilterSelection;
+
+static void print_usage(const char *program_name) {
+    fprintf(stderr,
+            "Uso:\n"
+            "  %s --output <carpeta> --filters <vg,vc,hg,hc,dg,dc> "
+            "[--kernel-gray <impar>] [--kernel-color <impar>] <img1.bmp> [img2.bmp ...]\n",
+            program_name);
+}
+
+static int is_valid_kernel(int value) {
+    return value > 0 && value % 2 == 1;
+}
+
+static int directory_exists(const char *path) {
+    struct stat info;
+    return stat(path, &info) == 0 && (info.st_mode & S_IFDIR);
+}
+
+static int ensure_directory(const char *path) {
+    if (directory_exists(path)) {
+        return 1;
+    }
+
+    if (MKDIR(path) == 0) {
+        return 1;
+    }
+
+    return errno == EEXIST;
+}
+
+static int ends_with_bmp(const char *path) {
+    size_t length = strlen(path);
+    if (length < 4) {
+        return 0;
+    }
+
+    const char *ext = path + length - 4;
+    return (tolower((unsigned char)ext[0]) == '.') &&
+           (tolower((unsigned char)ext[1]) == 'b') &&
+           (tolower((unsigned char)ext[2]) == 'm') &&
+           (tolower((unsigned char)ext[3]) == 'p');
+}
+
+static const char *file_basename(const char *path) {
+    const char *slash = strrchr(path, '/');
+    const char *backslash = strrchr(path, '\\');
+    const char *base = path;
+
+    if (slash && backslash) {
+        base = (slash > backslash) ? slash + 1 : backslash + 1;
+    } else if (slash) {
+        base = slash + 1;
+    } else if (backslash) {
+        base = backslash + 1;
+    }
+
+    return base;
+}
+
+static void build_output_path(char *buffer, size_t buffer_size, const char *output_dir,
+                              const char *input_path, const char *suffix) {
+    const char *base = file_basename(input_path);
+    const char *dot = strrchr(base, '.');
+    size_t name_len = dot ? (size_t)(dot - base) : strlen(base);
+    snprintf(buffer, buffer_size, "%s%c%.*s_%s.bmp", output_dir, PATH_SEP, (int)name_len, base, suffix);
+}
+
+static int parse_filters(const char *value, FilterSelection *filters) {
+    char buffer[128];
+    char *token = NULL;
+
+    memset(filters, 0, sizeof(*filters));
+    snprintf(buffer, sizeof(buffer), "%s", value);
+    token = strtok(buffer, ",");
+
+    while (token != NULL) {
+        if (strcmp(token, "vg") == 0) {
+            filters->vg = 1;
+        } else if (strcmp(token, "vc") == 0) {
+            filters->vc = 1;
+        } else if (strcmp(token, "hg") == 0) {
+            filters->hg = 1;
+        } else if (strcmp(token, "hc") == 0) {
+            filters->hc = 1;
+        } else if (strcmp(token, "dg") == 0) {
+            filters->dg = 1;
+        } else if (strcmp(token, "dc") == 0) {
+            filters->dc = 1;
+        } else {
+            fprintf(stderr, "Filtro no reconocido: %s\n", token);
+            return 0;
+        }
+
+        token = strtok(NULL, ",");
+    }
+
+    return filters->vg || filters->vc || filters->hg || filters->hc || filters->dg || filters->dc;
+}
+
+static int parse_int(const char *value, int *target) {
+    char *end = NULL;
+    long parsed = strtol(value, &end, 10);
+    if (*value == '\0' || *end != '\0' || parsed <= 0 || parsed > 999) {
+        return 0;
+    }
+
+    *target = (int)parsed;
+    return 1;
+}
+
+int main(int argc, char *argv[]) {
+    const char *output_dir = NULL;
+    const char *image_paths[MAX_IMAGES];
+    int image_count = 0;
+    int kernel_gray = 0;
+    int kernel_color = 0;
+    FilterSelection filters;
+
+    memset(&filters, 0, sizeof(filters));
+
+    if (argc < 5) {
+        print_usage(argv[0]);
+        return 1;
+    }
+
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "--output") == 0) {
+            if (i + 1 >= argc) {
+                fprintf(stderr, "Falta el valor para --output\n");
+                return 1;
+            }
+            output_dir = argv[++i];
+        } else if (strcmp(argv[i], "--filters") == 0) {
+            if (i + 1 >= argc || !parse_filters(argv[++i], &filters)) {
+                fprintf(stderr, "La lista de filtros es invalida\n");
+                return 1;
+            }
+        } else if (strcmp(argv[i], "--kernel-gray") == 0) {
+            if (i + 1 >= argc || !parse_int(argv[++i], &kernel_gray)) {
+                fprintf(stderr, "Kernel gris invalido\n");
+                return 1;
+            }
+        } else if (strcmp(argv[i], "--kernel-color") == 0) {
+            if (i + 1 >= argc || !parse_int(argv[++i], &kernel_color)) {
+                fprintf(stderr, "Kernel color invalido\n");
+                return 1;
+            }
+        } else if (strcmp(argv[i], "--help") == 0) {
+            print_usage(argv[0]);
+            return 0;
+        } else {
+            if (image_count >= MAX_IMAGES) {
+                fprintf(stderr, "Solo se permiten hasta %d imagenes por ejecucion\n", MAX_IMAGES);
+                return 1;
+            }
+            image_paths[image_count++] = argv[i];
+        }
+    }
+
+    if (!output_dir || image_count == 0) {
+        fprintf(stderr, "Debes indicar carpeta de salida y al menos una imagen BMP\n");
+        return 1;
+    }
+
+    if (!ensure_directory(output_dir)) {
+        fprintf(stderr, "No se pudo crear o acceder a la carpeta de salida: %s\n", output_dir);
+        return 1;
+    }
+
+    for (int i = 0; i < image_count; i++) {
+        if (!ends_with_bmp(image_paths[i])) {
+            fprintf(stderr, "Archivo no valido (solo BMP): %s\n", image_paths[i]);
+            return 1;
+        }
+    }
+
+    if ((filters.dg && !is_valid_kernel(kernel_gray)) || (filters.dc && !is_valid_kernel(kernel_color))) {
+        fprintf(stderr, "Los kernels de desenfoque deben ser enteros positivos e impares\n");
+        return 1;
+    }
+
+    omp_set_num_threads(NUM_THREADS);
+    double inicio = omp_get_wtime();
+
+    for (int i = 0; i < image_count; i++) {
+        char out_vg[MAX_PATH_LEN];
+        char out_vc[MAX_PATH_LEN];
+        char out_hg[MAX_PATH_LEN];
+        char out_hc[MAX_PATH_LEN];
+        char out_dg[MAX_PATH_LEN];
+        char out_dc[MAX_PATH_LEN];
+
+        build_output_path(out_vg, sizeof(out_vg), output_dir, image_paths[i], "vg");
+        build_output_path(out_vc, sizeof(out_vc), output_dir, image_paths[i], "vc");
+        build_output_path(out_hg, sizeof(out_hg), output_dir, image_paths[i], "hg");
+        build_output_path(out_hc, sizeof(out_hc), output_dir, image_paths[i], "hc");
+        build_output_path(out_dg, sizeof(out_dg), output_dir, image_paths[i], "dg");
+        build_output_path(out_dc, sizeof(out_dc), output_dir, image_paths[i], "dc");
+
+#pragma omp parallel sections
+        {
+#pragma omp section
+            {
+                if (filters.vg) {
+                    inv_img(out_vg, image_paths[i]);
+                }
+            }
+#pragma omp section
+            {
+                if (filters.vc) {
+                    inv_img_color(out_vc, image_paths[i]);
+                }
+            }
+#pragma omp section
+            {
+                if (filters.hg) {
+                    inv_img_grey_horizontal(out_hg, image_paths[i]);
+                }
+            }
+#pragma omp section
+            {
+                if (filters.hc) {
+                    inv_img_color_horizontal(out_hc, image_paths[i]);
+                }
+            }
+#pragma omp section
+            {
+                if (filters.dg) {
+                    desenfoque(image_paths[i], out_dg, kernel_gray);
+                }
+            }
+#pragma omp section
+            {
+                if (filters.dc) {
+                    desenfoque_color(image_paths[i], out_dc, kernel_color);
+                }
+            }
+        }
+    }
+
+    double total = omp_get_wtime() - inicio;
+    printf("TOTAL_TIME=%.6f\n", total);
+    printf("OUTPUT_DIR=%s\n", output_dir);
+    return 0;
+}
