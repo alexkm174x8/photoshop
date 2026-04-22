@@ -1,0 +1,260 @@
+Funcion: inv_img, con ./img/miri.bmp
+Localidades totales leidas: 4326400
+Localidades totales escritas: 4326400
+-------------------------------------
+Funcion: inv_img_grey_horizontal, con ./img/miri.bmp
+Localidades totales leidas: 4326400
+Localidades totales escritas: 4326400
+-------------------------------------
+Funcion: inv_img_color, con ./img/miri.bmp
+Localidades totales leidas: 4326400
+Localidades totales escritas: 4326400
+-------------------------------------
+Funcion: inv_img_color_horizontal, con ./img/miri.bmp
+Localidades totales leidas: 4326400
+Localidades totales escritas: 4326400
+-------------------------------------
+Funcion: desenfoque, con ./img/miri.bmp
+Localidades totales leidas: 4326400
+Localidades totales escritas: 4326400
+-------------------------------------
+Funcion: desenfoque_color, con ./img/miri.bmp
+Localidades totales leidas: 4326400
+Localidades totales escritas: 4326400
+-------------------------------------
+Funcion: inv_img, con ./img/sofi.bmp
+Localidades totales leidas: 5102450
+Localidades totales escritas: 5102450
+-------------------------------------
+Funcion: inv_img_grey_horizontal, con ./img/sofi.bmp
+Localidades totales leidas: 5102450
+Localidades totales escritas: 5102450
+-------------------------------------
+Funcion: inv_img_color, con ./img/sofi.bmp
+Localidades totales leidas: 5102450
+Localidades totales escritas: 5102450
+-------------------------------------
+Funcion: inv_img_color_horizontal, con ./img/sofi.bmp
+Localidades totales leidas: 5102450
+Localidades totales escritas: 5102450
+-------------------------------------
+Funcion: desenfoque, con ./img/sofi.bmp
+Localidades totales leidas: 5102450
+Localidades totales escritas: 5102450
+-------------------------------------
+Funcion: desenfoque_color, con ./img/sofi.bmp
+Localidades totales leidas: 5102450
+Localidades totales escritas: 5102450
+-------------------------------------
+Funcion: inv_img, con ./img/kong.bmp
+Localidades totales leidas: 4184050
+Localidades totales escritas: 4184050
+-------------------------------------
+Funcion: inv_img_grey_horizontal, con ./img/kong.bmp
+Localidades totales leidas: 4184050
+Localidades totales escritas: 4184050
+-------------------------------------
+Funcion: inv_img_color, con ./img/kong.bmp
+Localidades totales leidas: 4184050
+Localidades totales escritas: 4184050
+-------------------------------------
+Funcion: inv_img_color_horizontal, con ./img/kong.bmp
+Localidades totales leidas: 4184050
+Localidades totales escritas: 4184050
+-------------------------------------
+Funcion: desenfoque, con ./img/kong.bmp
+Localidades totales leidas: 4184050
+Localidades totales escritas: 4184050
+-------------------------------------
+Funcion: desenfoque_color, con ./img/kong.bmp
+Localidades totales leidas: 4184050
+Localidades totales escritas: 4184050
+-------------------------------------
+Funcion: inv_img, con ./img/fany.bmp
+Localidades totales leidas: 16084992
+Localidades totales escritas: 16084992
+-------------------------------------
+Funcion: inv_img_grey_horizontal, con ./img/fany.bmp
+Localidades totales leidas: 16084992
+Localidades totales escritas: 16084992
+-------------------------------------
+Funcion: inv_img_color, con ./img/fany.bmp
+Localidades totales leidas: 16084992
+Localidades totales escritas: 16084992
+-------------------------------------
+Funcion: inv_img_color_horizontal, con ./img/fany.bmp
+Localidades totales leidas: 16084992
+Localidades totales escritas: 16084992
+-------------------------------------
+Funcion: desenfoque, con ./img/fany.bmp
+Localidades totales leidas: 16084992
+Localidades totales escritas: 16084992
+-------------------------------------
+Funcion: desenfoque_color, con ./img/fany.bmp
+Localidades totales leidas: 16084992
+Localidades totales escritas: 16084992
+-------------------------------------
+Tiempo total de ejecucion: 282.252000 segundos
+=====================================
+Funcion: inv_img, con ./img/miri.bmp
+Localidades totales leidas: 4326400
+Localidades totales escritas: 4326400
+-------------------------------------
+Funcion: inv_img_grey_horizontal, con ./img/miri.bmp
+Localidades totales leidas: 4326400
+Localidades totales escritas: 4326400
+-------------------------------------
+Funcion: inv_img_color, con ./img/miri.bmp
+Localidades totales leidas: 4326400
+Localidades totales escritas: 4326400
+-------------------------------------
+Funcion: inv_img_color_horizontal, con ./img/miri.bmp
+Localidades totales leidas: 4326400
+Localidades totales escritas: 4326400
+-------------------------------------
+Funcion: desenfoque, con ./img/miri.bmp
+Localidades totales leidas: 4326400
+Localidades totales escritas: 4326400
+-------------------------------------
+Funcion: desenfoque_color, con ./img/miri.bmp
+Localidades totales leidas: 4326400
+Localidades totales escritas: 4326400
+-------------------------------------
+Funcion: inv_img, con ./img/sofi.bmp
+Localidades totales leidas: 5102450
+Localidades totales escritas: 5102450
+-------------------------------------
+Funcion: inv_img_grey_horizontal, con ./img/sofi.bmp
+Localidades totales leidas: 5102450
+Localidades totales escritas: 5102450
+-------------------------------------
+Funcion: inv_img_color, con ./img/sofi.bmp
+Localidades totales leidas: 5102450
+Localidades totales escritas: 5102450
+-------------------------------------
+Funcion: inv_img_color_horizontal, con ./img/sofi.bmp
+Localidades totales leidas: 5102450
+Localidades totales escritas: 5102450
+-------------------------------------
+Funcion: desenfoque, con ./img/sofi.bmp
+Localidades totales leidas: 5102450
+Localidades totales escritas: 5102450
+-------------------------------------
+Funcion: desenfoque_color, con ./img/sofi.bmp
+Localidades totales leidas: 5102450
+Localidades totales escritas: 5102450
+-------------------------------------
+Funcion: inv_img, con ./img/kong.bmp
+Localidades totales leidas: 4184050
+Localidades totales escritas: 4184050
+-------------------------------------
+Funcion: inv_img_grey_horizontal, con ./img/kong.bmp
+Localidades totales leidas: 4184050
+Localidades totales escritas: 4184050
+-------------------------------------
+Funcion: inv_img_color, con ./img/kong.bmp
+Localidades totales leidas: 4184050
+Localidades totales escritas: 4184050
+-------------------------------------
+Funcion: inv_img_color_horizontal, con ./img/kong.bmp
+Localidades totales leidas: 4184050
+Localidades totales escritas: 4184050
+-------------------------------------
+Funcion: desenfoque, con ./img/kong.bmp
+Localidades totales leidas: 4184050
+Localidades totales escritas: 4184050
+-------------------------------------
+Funcion: desenfoque_color, con ./img/kong.bmp
+Localidades totales leidas: 4184050
+Localidades totales escritas: 4184050
+-------------------------------------
+Funcion: inv_img, con ./img/fany.bmp
+Localidades totales leidas: 16084992
+Localidades totales escritas: 16084992
+-------------------------------------
+Funcion: inv_img_grey_horizontal, con ./img/fany.bmp
+Localidades totales leidas: 16084992
+Localidades totales escritas: 16084992
+-------------------------------------
+Funcion: inv_img_color, con ./img/fany.bmp
+Localidades totales leidas: 16084992
+Localidades totales escritas: 16084992
+-------------------------------------
+Funcion: inv_img_color_horizontal, con ./img/fany.bmp
+Localidades totales leidas: 16084992
+Localidades totales escritas: 16084992
+-------------------------------------
+Funcion: inv_img, con ./img/miri.bmp
+Localidades totales leidas: 4326400
+Localidades totales escritas: 4326400
+-------------------------------------
+Funcion: inv_img_grey_horizontal, con ./img/miri.bmp
+Localidades totales leidas: 4326400
+Localidades totales escritas: 4326400
+-------------------------------------
+Funcion: inv_img_color, con ./img/miri.bmp
+Localidades totales leidas: 4326400
+Localidades totales escritas: 4326400
+-------------------------------------
+Funcion: inv_img_color_horizontal, con ./img/miri.bmp
+Localidades totales leidas: 4326400
+Localidades totales escritas: 4326400
+-------------------------------------
+Funcion: desenfoque, con ./img/miri.bmp
+Localidades totales leidas: 4326400
+Localidades totales escritas: 4326400
+-------------------------------------
+Funcion: desenfoque_color, con ./img/miri.bmp
+Localidades totales leidas: 4326400
+Localidades totales escritas: 4326400
+-------------------------------------
+Funcion: inv_img, con ./img/sofi.bmp
+Localidades totales leidas: 5102450
+Localidades totales escritas: 5102450
+-------------------------------------
+Funcion: inv_img_grey_horizontal, con ./img/sofi.bmp
+Localidades totales leidas: 5102450
+Localidades totales escritas: 5102450
+-------------------------------------
+Funcion: inv_img_color, con ./img/sofi.bmp
+Localidades totales leidas: 5102450
+Localidades totales escritas: 5102450
+-------------------------------------
+Funcion: inv_img_color_horizontal, con ./img/sofi.bmp
+Localidades totales leidas: 5102450
+Localidades totales escritas: 5102450
+-------------------------------------
+Funcion: desenfoque, con ./img/sofi.bmp
+Localidades totales leidas: 5102450
+Localidades totales escritas: 5102450
+-------------------------------------
+Funcion: desenfoque_color, con ./img/sofi.bmp
+Localidades totales leidas: 5102450
+Localidades totales escritas: 5102450
+-------------------------------------
+Funcion: inv_img, con ./img/kong.bmp
+Localidades totales leidas: 4184050
+Localidades totales escritas: 4184050
+-------------------------------------
+Funcion: inv_img_grey_horizontal, con ./img/kong.bmp
+Localidades totales leidas: 4184050
+Localidades totales escritas: 4184050
+-------------------------------------
+Funcion: inv_img_color, con ./img/kong.bmp
+Localidades totales leidas: 4184050
+Localidades totales escritas: 4184050
+-------------------------------------
+Funcion: inv_img_color_horizontal, con ./img/kong.bmp
+Localidades totales leidas: 4184050
+Localidades totales escritas: 4184050
+-------------------------------------
+Funcion: desenfoque, con ./img/kong.bmp
+Localidades totales leidas: 4184050
+Localidades totales escritas: 4184050
+-------------------------------------
+Funcion: desenfoque_color, con ./img/kong.bmp
+Localidades totales leidas: 4184050
+Localidades totales escritas: 4184050
+-------------------------------------
+Tiempo total de ejecucion: 116.577000 segundos
+=====================================
