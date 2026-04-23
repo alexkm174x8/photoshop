@@ -31,11 +31,27 @@ pip install PySide6
 
 ---
 
-## 3) Compilar el backend
+## 3) Compilar el backend (OpenMP)
 
 Desde la carpeta `proyecto/`:
 
-### Linux / macOS
+### macOS (Apple Silicon / Homebrew)
+
+```bash
+brew install gcc
+mkdir -p c_backend/bin
+/opt/homebrew/bin/gcc-15 -fopenmp c_backend/src/bmp_processor.c -o c_backend/bin/para_image_parra
+```
+
+Si no sabes que version de GCC tienes instalada:
+
+```bash
+ls /opt/homebrew/bin/gcc-*
+```
+
+Luego reemplaza `gcc-15` por tu version real (por ejemplo `gcc-14`).
+
+### Linux
 
 ```bash
 mkdir -p c_backend/bin
@@ -53,11 +69,19 @@ gcc -fopenmp c_backend/src/bmp_processor.c -o c_backend/bin/para_image_parra.exe
 
 ---
 
-## 4) Ejecutar la interfaz
+## 4) Ejecutar la interfaz (GUI)
 
 Desde `proyecto/`:
 
 ```bash
+python3 -m pip install PySide6
+python3 gui/main.py
+```
+
+Si tu entorno usa `python` en lugar de `python3`:
+
+```bash
+python -m pip install PySide6
 python gui/main.py
 ```
 
@@ -116,7 +140,7 @@ Los filtros concretos estan implementados en:
   Compilar de nuevo el backend (seccion 3).
 
 - **Error con OpenMP al compilar**  
-  Verificar que tu compilador soporte `-fopenmp`.
+  En macOS, `gcc` puede apuntar a Apple Clang (sin OpenMP). Usar `gcc-15` (o la version instalada por Homebrew) con ruta completa.
 
 - **No procesa imagenes**  
   Confirmar que los archivos sean `.bmp` validos.
