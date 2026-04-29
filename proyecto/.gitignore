@@ -2,3 +2,4 @@ __pycache__/
 *.pyc
 c_backend/bin/
 c_backend/*.exe
+output/

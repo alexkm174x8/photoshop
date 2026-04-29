@@ -259,7 +259,7 @@ class MainWindow(QMainWindow):
 
     def _create_kernel_spinbox(self) -> QSpinBox:
         spin = QSpinBox()
-        spin.setRange(1, 99)
+        spin.setRange(1, 999)
         spin.setSingleStep(2)
         spin.setValue(27)
         return spin
