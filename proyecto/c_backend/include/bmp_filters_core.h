@@ -152,10 +152,12 @@ static void desenfoque_color(const char *input_path, const char *output_path, in
     int row_padded = (ancho * 3 + 3) & (~3);
     unsigned char **input_rows = (unsigned char **)malloc(alto * sizeof(unsigned char *));
     unsigned char **output_rows = (unsigned char **)malloc(alto * sizeof(unsigned char *));
+    unsigned char **temp_rows = (unsigned char **)malloc(alto * sizeof(unsigned char *));
 
     for (int i = 0; i < alto; i++) {
         input_rows[i] = (unsigned char *)malloc(row_padded);
         output_rows[i] = (unsigned char *)malloc(row_padded);
+        temp_rows[i] = (unsigned char *)malloc(row_padded);
         fread(input_rows[i], 1, row_padded, image);
     }
 
@@ -173,9 +175,9 @@ static void desenfoque_color(const char *input_path, const char *output_path, in
                     count++;
                 }
             }
-            input_rows[y][x * 3] = (unsigned char)(sB / count);
-            input_rows[y][x * 3 + 1] = (unsigned char)(sG / count);
-            input_rows[y][x * 3 + 2] = (unsigned char)(sR / count);
+            temp_rows[y][x * 3] = (unsigned char)(sB / count);
+            temp_rows[y][x * 3 + 1] = (unsigned char)(sG / count);
+            temp_rows[y][x * 3 + 2] = (unsigned char)(sR / count);
         }
     }
 
@@ -185,9 +187,9 @@ static void desenfoque_color(const char *input_path, const char *output_path, in
             for (int dy = -k; dy <= k; dy++) {
                 int ny = y + dy;
                 if (ny >= 0 && ny < alto) {
-                    sB += input_rows[ny][x * 3];
-                    sG += input_rows[ny][x * 3 + 1];
-                    sR += input_rows[ny][x * 3 + 2];
+                    sB += temp_rows[ny][x * 3];
+                    sG += temp_rows[ny][x * 3 + 1];
+                    sR += temp_rows[ny][x * 3 + 2];
                     count++;
                 }
             }
@@ -200,10 +202,12 @@ static void desenfoque_color(const char *input_path, const char *output_path, in
 
     for (int i = 0; i < alto; i++) {
         free(input_rows[i]);
+        free(temp_rows[i]);
         free(output_rows[i]);
     }
 
     free(input_rows);
+    free(temp_rows);
     free(output_rows);
     fclose(image);
     fclose(outputImage);
