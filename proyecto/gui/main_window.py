@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from PySide6.QtCore import QObject, QThread, Qt, Signal
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QPixmap
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QApplication,
@@ -135,7 +135,32 @@ class MainWindow(QMainWindow):
         root.setContentsMargins(20, 20, 20, 20)
         root.setSpacing(18)
 
-        root.addWidget(self._build_left_panel(), 5)
+        left_container = QWidget()
+        left_layout = QVBoxLayout(left_container)
+        left_layout.setSpacing(10)
+        left_layout.setContentsMargins(0, 0, 0, 0)
+
+        logo_label = QLabel()
+        logo_path = PROJECT_ROOT / "logo_tec.png"
+        pixmap = QPixmap(str(logo_path))
+
+        logo_label.setPixmap(pixmap.scaledToWidth(220, Qt.SmoothTransformation))
+        logo_label.setAlignment(Qt.AlignLeft)
+
+        about_button = QPushButton("Acerca de")
+        about_button.clicked.connect(self.show_about_dialog)
+
+        logo_row = QHBoxLayout()
+        logo_row.addWidget(logo_label)
+        logo_row.addStretch(1)  # empuja el botón hacia la derecha
+        logo_row.addWidget(about_button)
+
+        left_panel = self._build_left_panel()
+
+        left_layout.addLayout(logo_row)
+        left_layout.addWidget(left_panel)
+
+        root.addWidget(left_container, 5)
         root.addWidget(self._build_right_panel(), 4)
 
         self.setCentralWidget(container)
@@ -239,11 +264,7 @@ class MainWindow(QMainWindow):
         self.execute_button.setObjectName("primaryButton")
         self.execute_button.clicked.connect(self.start_processing)
 
-        about_button = QPushButton("Acerca de")
-        about_button.clicked.connect(self.show_about_dialog)
-
         action_row.addWidget(self.execute_button, 1)
-        action_row.addWidget(about_button)
 
         backend_hint = QLabel("El boton Ejecutar se bloquea mientras corre el backend en C.")
         backend_hint.setObjectName("mutedLabel")

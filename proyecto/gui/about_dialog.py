@@ -8,18 +8,23 @@ class AboutDialog(QDialog):
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.setObjectName("aboutDialog")
-        self.setWindowTitle("Acerca de")
+        self.setWindowTitle("Acerca de:")
         self.setModal(True)
         self.resize(420, 240)
 
-        title = QLabel("Procesamiento de Imagenes BMP")
+        title = QLabel("Acerca de")
         title.setObjectName("aboutTitle")
 
         body = QLabel(
-            "Aplicacion de apoyo para un proyecto de procesamiento paralelo de imagenes BMP.\n\n"
-            "Curso: Programacion Paralela / Procesamiento de Imagenes.\n"
-            "Tecnologias: C con OpenMP para el backend y Python con PySide6 para la interfaz.\n"
-            "Equipo: proyecto academico de procesamiento BMP con interfaz grafica reutilizable."
+            "TC3003B\n"
+            "Tecnológico de Monterrey\n"
+            "Campus Puebla\n"
+            "Mayo 2026\n"
+            "Equipo:\n"
+            "Estefanía Antonio Villaseca A01736897\n"
+            "Miranda Eugenia Colorado Arróniz A01737023\n"
+            "Alejandro Kong Montoya A01734271\n"
+            "Sofía Zugasti Delgado A00837478"
         )
         body.setObjectName("aboutBody")
         body.setWordWrap(True)
