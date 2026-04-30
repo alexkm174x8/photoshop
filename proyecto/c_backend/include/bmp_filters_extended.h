@@ -1,10 +1,12 @@
-#ifndef BMP_FILTERS_EXTENDED_H
+﻿#ifndef BMP_FILTERS_EXTENDED_H
 #define BMP_FILTERS_EXTENDED_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+// variante de manejo de encabezado usada por este header
+// replica el comportamiento de bmp_filters_core.h
 static void manejar_encabezado_1(FILE *in, FILE *out, int *ancho, int *alto, int *offset) {
     unsigned char fileHeader[14];
     fread(fileHeader, 1, 14, in);
@@ -20,6 +22,7 @@ static void manejar_encabezado_1(FILE *in, FILE *out, int *ancho, int *alto, int
     free(fullHeader);
 }
 
+// convierte la imagen a gris sin invertirla
 static void gray_img(const char *output_path, const char *input_path) {
     FILE *image = fopen(input_path, "rb");
     if (!image) {
@@ -56,6 +59,8 @@ static void gray_img(const char *output_path, const char *input_path) {
     fclose(outputImage);
 }
 
+// espejo horizontal en gris:
+// almacena fila por fila y luego escribe columnas en orden inverso
 static void inv_img_grey_horizontal(const char *output_path, const char *input_path) {
     FILE *image = fopen(input_path, "rb");
     if (!image) {
@@ -74,6 +79,7 @@ static void inv_img_grey_horizontal(const char *output_path, const char *input_p
     int padding = (4 - (ancho * 3) % 4) % 4;
     unsigned char *pixels = (unsigned char *)malloc(ancho * alto);
 
+    // lectura y conversion a gris
     for (int i = 0; i < alto; i++) {
         for (int j = 0; j < ancho; j++) {
             unsigned char b = fgetc(image);
@@ -86,6 +92,7 @@ static void inv_img_grey_horizontal(const char *output_path, const char *input_p
         }
     }
 
+    // escritura con inversion horizontal (derecha -> izquierda)
     for (int i = 0; i < alto; i++) {
         for (int j = ancho - 1; j >= 0; j--) {
             unsigned char pxl = pixels[i * ancho + j];
@@ -103,6 +110,8 @@ static void inv_img_grey_horizontal(const char *output_path, const char *input_p
     fclose(outputImage);
 }
 
+// espejo horizontal color:
+// guarda canales b,g,r y revierte solo posicion horizontal
 static void inv_img_color_horizontal(const char *output_path, const char *input_path) {
     FILE *image = fopen(input_path, "rb");
     if (!image) {
@@ -153,6 +162,9 @@ static void inv_img_color_horizontal(const char *output_path, const char *input_
     fclose(outputImage);
 }
 
+// desenfoque en gris:
+// 1) convierte a gris
+// 2) aplica blur separable horizontal + vertical
 static void desenfoque(const char *input_path, const char *output_path, int kernel_size) {
     FILE *image = fopen(input_path, "rb");
     if (!image) {
@@ -173,6 +185,7 @@ static void desenfoque(const char *input_path, const char *output_path, int kern
     unsigned char **out_rows = (unsigned char **)malloc(alto * sizeof(unsigned char *));
     unsigned char **tmp_rows = (unsigned char **)malloc(alto * sizeof(unsigned char *));
 
+    // lee imagen y transforma a gris en el buffer de entrada
     for (int i = 0; i < alto; i++) {
         in_rows[i] = (unsigned char *)malloc(row_padded);
         out_rows[i] = (unsigned char *)malloc(row_padded);
@@ -191,6 +204,8 @@ static void desenfoque(const char *input_path, const char *output_path, int kern
     }
 
     int k = kernel_size / 2;
+
+    // pasada horizontal
     for (int y = 0; y < alto; y++) {
         for (int x = 0; x < ancho; x++) {
             int sum = 0;
@@ -209,6 +224,7 @@ static void desenfoque(const char *input_path, const char *output_path, int kern
         }
     }
 
+    // pasada vertical y escritura final
     for (int y = 0; y < alto; y++) {
         for (int x = 0; x < ancho; x++) {
             int sum = 0;

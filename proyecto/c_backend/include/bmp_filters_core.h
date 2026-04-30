@@ -1,14 +1,22 @@
-#ifndef BMP_FILTERS_CORE_H
+﻿#ifndef BMP_FILTERS_CORE_H
 #define BMP_FILTERS_CORE_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+// calcula bytes de relleno por fila para bmp de 24 bits
+// cada fila en bmp debe ocupar un multiplo de 4 bytes
 static inline int calcular_padding(int ancho) {
     return (4 - (ancho * 3) % 4) % 4;
 }
 
+// lee y copia el encabezado bmp completo:
+// 1) lee 14 bytes de file header
+// 2) extrae offset al arreglo de pixeles
+// 3) lee el resto del header hasta offset
+// 4) lo escribe igual en salida
+// 5) extrae ancho/alto de la imagen
 static void manejar_encabezado(FILE *in, FILE *out, int *ancho, int *alto, int *offset) {
     unsigned char fileHeader[14];
     fread(fileHeader, 1, 14, in);
@@ -24,6 +32,10 @@ static void manejar_encabezado(FILE *in, FILE *out, int *ancho, int *alto, int *
     free(fullHeader);
 }
 
+// inversion vertical en escala de grises:
+// - convierte cada pixel a gris
+// - guarda filas en memoria
+// - escribe filas de abajo hacia arriba
 static void inv_img(const char *output_path, const char *input_path) {
     FILE *image = fopen(input_path, "rb");
     if (!image) {
@@ -42,6 +54,7 @@ static void inv_img(const char *output_path, const char *input_path) {
     int padding = calcular_padding(ancho);
     unsigned char **lineas = (unsigned char **)malloc(alto * sizeof(unsigned char *));
 
+    // lectura de pixeles y conversion a gris
     for (int i = 0; i < alto; i++) {
         lineas[i] = (unsigned char *)malloc(ancho);
         for (int j = 0; j < ancho; j++) {
@@ -55,9 +68,11 @@ static void inv_img(const char *output_path, const char *input_path) {
         }
     }
 
+    // escritura invertida vertical (de ultima fila a primera)
     for (int i = alto - 1; i >= 0; i--) {
         for (int x = 0; x < ancho; x++) {
             unsigned char pixel = lineas[i][x];
+            // se replican 3 canales para mantener bmp 24-bit
             fputc(pixel, outputImage);
             fputc(pixel, outputImage);
             fputc(pixel, outputImage);
@@ -76,6 +91,8 @@ static void inv_img(const char *output_path, const char *input_path) {
     fclose(outputImage);
 }
 
+// inversion vertical a color:
+// conserva b,g,r y solo invierte el orden de filas
 static void inv_img_color(const char *output_path, const char *input_path) {
     FILE *image = fopen(input_path, "rb");
     if (!image) {
@@ -96,6 +113,7 @@ static void inv_img_color(const char *output_path, const char *input_path) {
     unsigned char **g_lineas = (unsigned char **)malloc(alto * sizeof(unsigned char *));
     unsigned char **r_lineas = (unsigned char **)malloc(alto * sizeof(unsigned char *));
 
+    // lee todos los canales por fila
     for (int i = 0; i < alto; i++) {
         b_lineas[i] = (unsigned char *)malloc(ancho);
         g_lineas[i] = (unsigned char *)malloc(ancho);
@@ -110,6 +128,7 @@ static void inv_img_color(const char *output_path, const char *input_path) {
         }
     }
 
+    // escribe filas en orden inverso para espejo vertical
     for (int i = alto - 1; i >= 0; i--) {
         for (int y = 0; y < ancho; y++) {
             fputc(b_lineas[i][y], outputImage);
@@ -134,6 +153,8 @@ static void inv_img_color(const char *output_path, const char *input_path) {
     fclose(outputImage);
 }
 
+// desenfoque color separable (horizontal + vertical)
+// complejidad aproximada por pixel: o(kernel) en cada pasada
 static void desenfoque_color(const char *input_path, const char *output_path, int kernel_size) {
     FILE *image = fopen(input_path, "rb");
     if (!image) {
@@ -163,6 +184,7 @@ static void desenfoque_color(const char *input_path, const char *output_path, in
 
     int k = kernel_size / 2;
 
+    // pasada 1: promedio horizontal por canal
     for (int y = 0; y < alto; y++) {
         for (int x = 0; x < ancho; x++) {
             int sB = 0, sG = 0, sR = 0, count = 0;
@@ -181,6 +203,7 @@ static void desenfoque_color(const char *input_path, const char *output_path, in
         }
     }
 
+    // pasada 2: promedio vertical sobre resultado temporal
     for (int y = 0; y < alto; y++) {
         for (int x = 0; x < ancho; x++) {
             int sB = 0, sG = 0, sR = 0, count = 0;
