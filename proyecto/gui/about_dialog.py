@@ -7,7 +7,10 @@ Se invoca desde MainWindow a través del botón "Acerca de" o el menú Ayuda.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QDialog, QDialogButtonBox, QLabel, QVBoxLayout
 
 
@@ -36,7 +39,7 @@ class AboutDialog(QDialog):
         self.setObjectName("aboutDialog")       # referenciado en styles.qss
         self.setWindowTitle("Acerca de:")
         self.setModal(True)                     # bloquea interacción con la ventana padre
-        self.resize(420, 240)
+        self.resize(460, 380)
 
         # --- Título ---
         title = QLabel("Acerca de")
@@ -58,6 +61,15 @@ class AboutDialog(QDialog):
         body.setWordWrap(True)
         body.setTextFormat(Qt.PlainText)        # evita interpretación HTML accidental
 
+        # --- Logo institucional inferior ---
+        logo_label = QLabel()
+        logo_label.setAlignment(Qt.AlignCenter)
+        logo_path = Path(__file__).resolve().parent.parent / "logo_tec.png"
+        if logo_path.exists():
+            pixmap = QPixmap(str(logo_path))
+            if not pixmap.isNull():
+                logo_label.setPixmap(pixmap.scaledToWidth(260, Qt.SmoothTransformation))
+
         # --- Botón de cierre ---
         buttons = QDialogButtonBox(QDialogButtonBox.Ok)
         buttons.setObjectName("aboutButtons")
@@ -67,5 +79,6 @@ class AboutDialog(QDialog):
         layout = QVBoxLayout(self)
         layout.addWidget(title)
         layout.addWidget(body)
+        layout.addWidget(logo_label)
         layout.addStretch(1)                    # empuja el botón hacia abajo
         layout.addWidget(buttons)

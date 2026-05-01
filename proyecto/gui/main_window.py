@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from PySide6.QtCore import QObject, QThread, Qt, Signal
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QPixmap
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QApplication,
@@ -104,9 +104,9 @@ class DropArea(QFrame):
         label.setWordWrap(True)
 
         layout = QVBoxLayout(self)
-        layout.addStretch(1)
+        layout.setContentsMargins(14, 14, 14, 14)
+        layout.setSpacing(8)
         layout.addWidget(label)
-        layout.addStretch(1)
 
     def dragEnterEvent(self, event) -> None:  # noqa: N802
         """Acepta la operación de arrastre solo si contiene URLs (archivos)."""
@@ -318,6 +318,14 @@ class MainWindow(QMainWindow):
         subtitle = QLabel("Carga archivos BMP con arrastrar y soltar o con el selector.")
         subtitle.setObjectName("mutedLabel")
 
+        logo_label = QLabel()
+        logo_label.setAlignment(Qt.AlignCenter)
+        logo_path = PROJECT_ROOT / "logo_tec.png"
+        if logo_path.exists():
+            pixmap = QPixmap(str(logo_path))
+            if not pixmap.isNull():
+                logo_label.setPixmap(pixmap.scaledToWidth(260, Qt.SmoothTransformation))
+
         # DropArea: conecta su señal files_dropped a add_images()
         self.drop_area = DropArea()
         self.drop_area.files_dropped.connect(self.add_images)
@@ -348,6 +356,7 @@ class MainWindow(QMainWindow):
 
         layout.addWidget(title)
         layout.addWidget(subtitle)
+        layout.addWidget(logo_label)
         layout.addWidget(self.drop_area, 4)
         layout.addLayout(buttons)
         layout.addWidget(self.image_list, 5)
